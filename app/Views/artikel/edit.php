@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?= base_url(relativePath: '/edit.css');?>">
+<?= $this->include('template/admin_header'); ?> 
 <form action="<?= base_url('/admin/artikel/edit/' . $artikel['id']); ?>" method="post" enctype="multipart/form-data">
     <input type="hidden" name="_method" value="PUT">
     
@@ -20,3 +20,4 @@
 
     <button type="submit" class="btn btn-primary">Simpan</button>
 </form>
+<?= $this->include('template/admin_footer'); ?>

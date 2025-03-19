@@ -130,9 +130,6 @@ public function edit($id)
 }
 
 
-
-
-
     // Menghapus artikel
     public function delete($id)
     {

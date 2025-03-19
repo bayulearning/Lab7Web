@@ -2,7 +2,7 @@
 <html lang="en"> 
     <head> <meta charset="UTF-8"> <title><?= $title; ?></title> 
     <link rel="stylesheet" href="<?= base_url(relativePath: '/style.css');?>"> 
-    
+    <link rel="stylesheet" href="<?= base_url(relativePath: '/edit.css');?>">
 </head> 
 <body> <div id="container"> <header> 
     <h1>Layout Sederhana</h1>
