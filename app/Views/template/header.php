@@ -17,3 +17,4 @@ Universitas Pelita Bangsa, Bekasi
 <div class="container">
 <section id="wrapper" class="content-about"> 
     <section id="main"></section>
+

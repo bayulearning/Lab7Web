@@ -45,12 +45,16 @@ Dosen : Agung Nugroho, S.Kom., M.Kom.
 
 - membuat halaman admin
 - menambahkan route
+
   ```$routes->group('admin', function($routes) {
+
   $routes->get('artikel', 'Artikel::admin_index');
 $routes->add('artikel/add', 'Artikel::add');
   $routes->add('artikel/edit/(:any)', 'Artikel::edit/$1');
 $routes->get('artikel/delete/(:any)', 'Artikel::delete/$1');
+
   });```
+
 
 ![alt text](image-6.png)
 
@@ -59,6 +63,7 @@ $routes->get('artikel/delete/(:any)', 'Artikel::delete/$1');
 
 - membuat halaman edit
   ![alt text](image-8.png)
+<<<<<<< HEAD
 
 # Tugas Praktikum 3
  # Update 
@@ -73,3 +78,4 @@ data artikel digunakan untuk melihat perubahan
 class view cells sebagai controller untuk merender tampilan
  - membuat view untuk view cell artikel_terkini.php pada direktori components
 untuk menampilkan hasil dari render yang ditambahkan
+
