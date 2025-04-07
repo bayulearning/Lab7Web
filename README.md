@@ -88,3 +88,18 @@ untuk menampilkan hasil dari render yang ditambahkan
 View biasa hanya menampilkan konten statis atau dinamis tanpa logika tambahan, dan lebih fokus pada tampilan.
 
 View cell memungkinkan Anda untuk menyematkan logika eksekusi yang lebih terstruktur dalam tampilan, dan dapat digunakan ulang di berbagai tempat dalam aplikasi.
+
+
+# Tugas Praktikum 4
+# Update 
+
+- Membuat Tabel User
+- Membuat Model User
+untuk memproses data Login
+- Membuat Controller User
+- Membuat Database Seeder
+- Menambahkan Auth Filter
+- Menambahkan Fungsi Logout
+
+# Features Update
+- Membuat View Login
