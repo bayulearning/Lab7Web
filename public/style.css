@@ -33,7 +33,6 @@ p {
 }
 
 .container {
-
   display: flex;
   justify-content: space-between; /* Menyebarkan konten dan sidebar */
   height: 100%;
@@ -200,7 +199,6 @@ p {
 
 /* Mengatur tampilan umum form */
 form {
-  width: 80%;
   margin: 5px;
   font-family: Arial, sans-serif;
   background-color: #f9f9f9;
