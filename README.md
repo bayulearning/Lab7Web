@@ -92,7 +92,6 @@ View cell memungkinkan Anda untuk menyematkan logika eksekusi yang lebih terstru
 
 # Tugas Praktikum 4
 # Update 
-
 - Membuat Tabel User
 - Membuat Model User
 untuk memproses data Login
