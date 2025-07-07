@@ -4,17 +4,18 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface; 
 use CodeIgniter\Filters\FilterInterface;
 
-class Auth implements FilterInterface { 
-    public function before(RequestInterface $request, $arguments = null) 
-    { // jika user belum login 
-        if(! session()->get('logged_in')){ 
-            // maka redirct ke halaman login 
-            return redirect()->to('/user/login'); 
-        } 
+class Auth implements FilterInterface
+{
+    public function before(RequestInterface $request, $arguments = null)
+    {
+        if (!session()->get('logged_in')) {
+            // Redirect ke halaman login jika belum login
+            return redirect()->to('/user/login');
+        }
     }
-    public function after(RequestInterface $request, ResponseInterface 
-    $response, $arguments = null) 
-    { 
-        // Do something here 
-    } 
+
+    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
+    {
+        // Tidak melakukan apapun setelah request
+    }
 }

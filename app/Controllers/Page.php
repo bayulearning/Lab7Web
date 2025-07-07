@@ -2,6 +2,10 @@
 namespace App\Controllers;
 class Page extends BaseController
 {
+public function home()
+{
+return view('home',[ 'title' => 'Halaman Home', 'content' => 'ini halaman home']);
+}
 public function about()
 {
 return view('about', [ 'title' => 'Halaman About', 'content' => 'Ini adalah halaman about yang menjelaskan tentang isi halaman ini.' ]);

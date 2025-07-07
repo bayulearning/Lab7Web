@@ -1,4 +1,4 @@
-
+<?= $this->include('template/header')?>
 <?= $this->extend('layout/main') ?> 
 <?= $this->section('content') ?> 
 
@@ -10,3 +10,4 @@
     <?= $content; ?>
 </p> 
 <?= $this->endSection() ?>
+<?= $this->include('template/footer')?>

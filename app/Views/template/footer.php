@@ -1,9 +1,5 @@
 </section> 
 <aside id="sidebar" class="sidebar-content"> 
-    <div class="widget-box"> 
-        <h3 class="title">Widget Header</h3> <ul> 
-        <li><a href="#">Widget Link</a></li>
-         <li><a href="#">Widget Link</a></li> </ul> 
         </div> 
         <div class="widget-box"> 
             <h3 class="title">Widget Text</h3> 

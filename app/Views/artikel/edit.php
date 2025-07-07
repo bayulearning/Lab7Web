@@ -1,23 +1,53 @@
-<?= $this->include('template/admin_header'); ?> 
-<form action="<?= base_url('/admin/artikel/edit/' . $artikel['id']); ?>" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="_method" value="PUT">
-    
-    <div class="form-group">
-        <label for="judul">Judul Artikel</label>
-        <input type="text" name="judul" id="judul" value="<?= esc($artikel['judul']); ?>" class="form-control" required>
-    </div>
+<?= $this->include('template/admin_header'); ?>
 
-    <div class="form-group">
-        <label for="isi">Isi Artikel</label>
-        <textarea name="isi" id="isi" class="form-control" required><?= esc($artikel['isi']); ?></textarea>
-    </div>
+<h2><?= esc($title); ?></h2>
 
-    <div class="form-group">
-        <label for="gambar">Gambar</label>
-        <input type="file" name="gambar" id="gambar" class="form-control">
-        <small class="form-text text-muted">Biarkan kosong jika tidak ingin mengubah gambar.</small>
-    </div>
+<?php if (isset($validation) && !empty($validation)): ?>
+  <div class="alert alert-danger">
+    <ul>
+      <?php foreach ($validation as $error): ?>
+        <li><?= esc($error); ?></li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
+<?php endif; ?>
 
-    <button type="submit" class="btn btn-primary">Simpan</button>
+<form action="" method="post" enctype="multipart/form-data">
+    <?= csrf_field(); ?>
+    <p>
+        <label for="judul">Judul</label>
+        <input type="text" name="judul" value="<?= esc($data['judul'] ?? '') ?>" required>
+    </p>
+
+    <p>
+        <label for="isi">Isi</label>
+        <textarea name="isi" cols="50" rows="10"><?= esc($data['isi'] ?? '') ?></textarea>
+    </p>
+
+    <p>
+        <label for="id_kategori">Kategori</label>
+        <select name="id_kategori" required>
+            <option value="">Pilih Kategori</option>
+            <?php foreach ($kategori as $k): ?>
+                <option value="<?= $k['id_kategori']; ?>"
+                    <?= ($data['id_kategori'] == $k['id_kategori']) ? 'selected' : '' ?>>
+                    <?= esc($k['nama_kategori']); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </p>
+
+    <p>
+        <label for="gambar">Gambar (opsional)</label><br>
+        <?php if (!empty($data['gambar'])): ?>
+            <img src="<?= base_url('gambar/' . $data['gambar']); ?>" width="150"><br>
+        <?php endif; ?>
+        <input type="file" name="gambar">
+    </p>
+
+    <p><input type="submit" value="Kirim" class="btn btn-primary"></p>
 </form>
+
+
+
 <?= $this->include('template/admin_footer'); ?>

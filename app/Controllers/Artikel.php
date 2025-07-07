@@ -3,16 +3,24 @@ namespace App\Controllers;
 
 use App\Models\ArtikelModel;
 use CodeIgniter\Exceptions\PageNotFoundException; // Menambahkan namespace untuk exception
+use App\Models\KategoriModel;
 
 class Artikel extends BaseController
 {
     public function index()
     {
         $title = 'Daftar Artikel';
-        $model = new ArtikelModel();
-        $artikel = $model->findAll(); // Mengambil semua artikel
+        $artikel = $artikelModel = new ArtikelModel();
+    
+        // Jika pakai getArtikelWithKategoriQuery()
+        $artikel = $artikelModel->getArtikelWithKategoriFiltered()->findAll();
+    
+        // Atau jika pakai filter
+        // $data['artikel'] = $artikelModel->getArtikelWithKategoriFiltered($q, $kategori_id)->findAll();
+    
         return view('artikel/index', compact('artikel', 'title')); // Mengirim data ke view
     }
+    
 
        public function indexadmin()
     {
@@ -21,113 +29,169 @@ class Artikel extends BaseController
         $artikel = $model->findAll(); // Mengambil semua artikel
         return view('artikel/index_admin', compact('artikel', 'title')); // Mengirim data ke view
     }
-
     public function view($slug)
     {
-        $model = new ArtikelModel();
-        // Mencari artikel berdasarkan slug
-        $artikel = $model->where('slug', $slug)->first();
-
-        // Jika artikel tidak ditemukan, tampilkan halaman error 404
-        if (!$artikel) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
-
-        // Menetapkan judul dari artikel yang ditemukan
-        $title = $artikel['judul'];
-
-        // Mengirimkan data artikel dan title ke view
-        return view('artikel/detail', compact('artikel', 'title'));
+    $model = new ArtikelModel();
+    $data['artikel'] = $model->where('slug', $slug)->first();
+    if (empty($data['artikel'])) {
+    throw new \CodeIgniter\Exceptions\PageNotFoundException('Cannot find the article.');
+    }
+    $data['title'] = $data['artikel']['judul'];
+    return view('artikel/detail', $data);
     }
 
     public function admin_index()
     {
-        $title = 'Daftar Artikel';
+        $title = 'Daftar Artikel (Admin)';
         $model = new ArtikelModel();
-        $artikel = $model->findAll(); // Mengambil semua artikel
-        return view('artikel/admin_index', compact('artikel', 'title')); // Mengirim data ke view admin
+    
+        $q = $this->request->getVar('q') ?? '';
+        $kategori_id = $this->request->getVar('kategori_id') ?? '';
+        $page = $this->request->getVar('page') ?? 1;
+    
+        // Query builder
+        $builder = $model->table('artikel')
+            ->select('artikel.*, kategori.nama_kategori')
+            ->join('kategori', 'kategori.id_kategori = artikel.id_kategori')
+            ->orderBy('artikel.id', 'ASC');
+    
+        if (!empty($q)) {
+            $builder->like('artikel.judul', $q);
+        }
+    
+        if (!empty($kategori_id)) {
+            $builder->where('artikel.id_kategori', $kategori_id);
+        }
+    
+        $artikel = $builder->paginate(5, 'default', $page);
+        $pager = $model->pager;
+    
+        $data = [
+            'title' => $title,
+            'q' => $q,
+            'kategori_id' => $kategori_id,
+            'artikel' => $artikel,
+            'pager' => $pager,
+        ];
+    
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'artikel' => view('artikel/_list', $data),
+                'pager'   => view('artikel/_pagination', $data),
+            ]);
+        } else {
+            $kategoriModel = new \App\Models\KategoriModel();
+            $data['kategori'] = $kategoriModel->asArray()->findAll();
+            return view('artikel/admin_index', $data);
+        }
+    }
+    
+
+    
+    
+// ... (methods add, edit, delete remain largely the same, but update to handle id_kategori)
+public function add()
+{
+    // Load model dan service validasi
+    $artikel = new ArtikelModel();
+    $kategoriModel = new KategoriModel();
+    $validation = \Config\Services::validation();
+
+    // Atur rules validasi
+    $validation->setRules([
+        'judul'       => 'required',
+        'id_kategori' => 'required|integer'
+    ]);
+
+    $isDataValid = $validation->withRequest($this->request)->run();
+
+    if ($isDataValid) {
+        $file = $this->request->getFile('gambar');
+        $fileName = $file->getRandomName();
+        $file->move(ROOTPATH . 'public/gambar', $fileName);
+
+        $artikel->insert([
+            'judul'       => $this->request->getPost('judul'),
+            'isi'         => $this->request->getPost('isi'),
+            'slug'        => url_title($this->request->getPost('judul'), '-', true),
+            'gambar'      => $fileName,
+            'id_kategori' => (int)$this->request->getPost('id_kategori'),
+        ]);
+
+        return redirect()->to('admin/artikel');
     }
 
-    public function add() { // validasi data. 
-    $validation = \Config\Services::validation(); 
-    $validation->setRules(['judul' => 'required']); 
-    $isDataValid = $validation->withRequest($this->request)->run(); 
-    if ($isDataValid) { 
-        $artikel = new ArtikelModel(); 
-        $artikel->insert([ 'judul' => $this->request->getPost('judul'),
-        'isi' => $this->request->getPost('isi'), 'slug' => url_title($this->request->getPost('judul')), ]); 
-        return redirect('admin/artikel'); 
-    } $title = "Tambah Artikel"; 
-    return view('artikel/form_add', compact('title')); }
+    // Ambil daftar kategori untuk dropdown
+    $kategori = $kategoriModel->asArray()->findAll();
+    $title = "Tambah Artikel";
+
+    return view('artikel/form_add', compact('title', 'kategori'));
+}
+
 
 public function edit($id)
 {
-    // Membuat instance model ArtikelModel
-    $model = new ArtikelModel();
-    
-    // Cari artikel berdasarkan ID
-    $artikel = $model->find($id);
+    $artikel = new ArtikelModel();
+    $validation = \Config\Services::validation();
 
-    // Jika artikel tidak ditemukan, tampilkan error
-    if (!$artikel) {
-        throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-    }
+    // Validasi input
+    $validation->setRules([
+        'judul' => 'required',
+        'id_kategori' => 'required|integer',
+    ]);
 
-    // Cek jika form disubmit (POST)
-    if ($this->request->getMethod() === 'post') {
+    $isDataValid = $validation->withRequest($this->request)->run();
 
-        // Validasi input dari form
-        $validationRules = [
-            'judul' => 'required|min_length[3]',
-            'isi' => 'required',
-        ];
+    if ($isDataValid) {
+        // Ambil data lama untuk cek gambar sebelumnya
+        $dataLama = $artikel->find($id);
 
-        // Cek apakah validasi berhasil
-        if (!$this->validate($validationRules)) {
-            // Jika validasi gagal, tampilkan form edit dengan pesan error
-            return view('artikel/edit', [
-                'artikel' => $artikel,
-                'title' => 'Edit Artikel',
-                'validation' => $this->validator
-            ]);
-        }
-
-        // Ambil data dari form
-        $data = [
+        // Siapkan data update
+        $updateData = [
             'judul' => $this->request->getPost('judul'),
             'isi' => $this->request->getPost('isi'),
+            'slug' => url_title($this->request->getPost('judul'), '-', true),
+            'id_kategori' => (int)$this->request->getPost('id_kategori'),
         ];
 
-        // Cek apakah gambar baru di-upload
-        if ($gambar = $this->request->getFile('gambar')) {
-            if ($gambar->isValid()) {
-                // Pindahkan gambar ke folder uploads
-                $gambar->move(WRITEPATH . 'uploads');
-                $data['gambar'] = $gambar->getName();  // Simpan nama gambar di database
+        // Cek apakah ada file gambar diupload
+        $gambar = $this->request->getFile('gambar');
+        if ($gambar && $gambar->isValid() && !$gambar->hasMoved()) {
+            $namaGambar = $gambar->getRandomName();
+            $gambar->move(ROOTPATH . 'public/gambar', $namaGambar);
+
+            // Hapus gambar lama jika ada
+            if (!empty($dataLama['gambar']) && file_exists(ROOTPATH . 'public/gambar/' . $dataLama['gambar'])) {
+                unlink(ROOTPATH . 'public/gambar/' . $dataLama['gambar']);
             }
-        } else {
-            // Jika gambar tidak diubah, gunakan gambar lama
-            $data['gambar'] = $artikel['gambar'];  // Gunakan gambar lama yang ada di database
+
+            $updateData['gambar'] = $namaGambar;
         }
 
-        // Debug: Log data yang akan diupdate
-        log_message('debug', 'Data yang akan diupdate: ' . print_r($data, true));
-
-        // Update artikel berdasarkan ID
-        if ($model->update($id, $data)) {
-            // Setelah artikel berhasil diupdate, redirect ke halaman daftar artikel
-            return redirect()->to('/admin/artikel')->with('success', 'Artikel berhasil diperbarui.');
-        } else {
-            // Jika update gagal, tampilkan pesan error
-            log_message('error', 'Gagal mengupdate artikel dengan ID: ' . $id);
-            return redirect()->back()->with('error', 'Gagal memperbarui artikel. Coba lagi.');
-        }
+        // Lakukan update
+        $artikel->update($id, $updateData);
+        return redirect('admin/artikel');
     }
 
-    // Jika form belum disubmit, tampilkan form edit dengan data artikel
-    $title = 'Edit Artikel: ' . $artikel['judul'];
-    return view('artikel/edit', compact('artikel', 'title'));
+    // Ambil data lama + kategori untuk form
+    $data = $artikel->where('id', $id)->first();
+    $kategoriModel = new \App\Models\KategoriModel();
+    $kategori = $kategoriModel->findAll();
+    $title = "Edit Artikel";
+
+    return view('artikel/edit', compact('title', 'data', 'kategori'));
 }
+
+
+
+    
+    // $data['artikel'] = $model->find($id);
+    // $data['kategori'] = $kategoriModel->findAll();
+    // $data['title'] = 'Edit Artikel';
+    // $db = \Config\Database::connect();
+
+    
+    // return view('artikel/edit', $data);
 
 
     // Menghapus artikel
@@ -141,9 +205,12 @@ public function edit($id)
         }
 
         // Menghapus artikel
-        $model->delete($artikel['id']);
+        $model->delete($id);
         return redirect()->to('/admin/artikel');
     }
+
+  
+}
 
     // public function edit($id) { $artikel = new ArtikelModel(); // validasi data. 
     // $validation = \Config\Services::validation(); 
@@ -154,4 +221,4 @@ public function edit($id)
     //     return redirect('admin/artikel'); } // ambil data lama 
     //     $data = $artikel->where('id', $id)->first(); 
     //     $title = "Edit Artikel"; return view('artikel/edit', compact('title', 'data')); }
-}
+

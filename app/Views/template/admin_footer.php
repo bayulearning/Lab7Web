@@ -1,9 +1,9 @@
 </section> 
 <aside id="sidebar" class="sidebar-content"> 
     <div class="widget-box"> 
+
     <h3 class="title">Widget Header</h3> <ul> 
-        <li><a href="#">Widget Link</a></li>
-         <li><a href="#">Widget Link</a></li> </ul> 
+       <?= view_cell('App\\Cells\\ArtikelTerkini::render') ?>  </ul> 
         </div> <div class="widget-box"> 
             <h3 class="title">Widget Text</h3> 
             <p>Vestibulum lorem elit, iaculis in nisl volutpat, malesuada tincidunt arcu. Proin in leo fringilla,
