@@ -110,6 +110,7 @@ View cell memungkinkan Anda untuk menyematkan logika eksekusi yang lebih terstru
 ### Features Update
 
 - Membuat View Login
+  ![alt-text](image-10.png)
 
 # Tugas Praktikum 5
 
@@ -124,6 +125,7 @@ View cell memungkinkan Anda untuk menyematkan logika eksekusi yang lebih terstru
 
 - Kolom Pencarian
 - Button kelompok data
+  ![alt text](image-11.png)
 
 # Tugas Praktikum 6
 
@@ -135,6 +137,7 @@ View cell memungkinkan Anda untuk menyematkan logika eksekusi yang lebih terstru
 ### Features
 
 - Upload Gambar
+  ![alt text](image-12.png)
 
 # Tugas Praktikum 7
 
@@ -150,6 +153,7 @@ View cell memungkinkan Anda untuk menyematkan logika eksekusi yang lebih terstru
   menggunakan model baru agar dapat menampilkan data relasi
 - Memodifikasi View
   Menambahkan kolom kategori pada view
+  ![alt text](image-13.png)
 
 # Tugas Praktikum 8
 
@@ -161,6 +165,7 @@ View cell memungkinkan Anda untuk menyematkan logika eksekusi yang lebih terstru
 ### Features
 
 - Aksi Tombol Ubah dan Hapus
+  ![alt text](image-14.png)
 
 # Tugas Praktikum 9
 
@@ -172,3 +177,4 @@ View cell memungkinkan Anda untuk menyematkan logika eksekusi yang lebih terstru
   agar fungsi Ajax dapat bekerja diperlukan modifikasi pada controller
 - Modifikasi View index
   memanggil jquery dan beberapa fungsi dengan java script untuk menjalankan AJAX
+  ![alt text](image-15.png)
